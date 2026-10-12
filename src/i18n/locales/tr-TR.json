@@ -291,6 +291,13 @@
         "Genel Komutlar veya bir oyunun sayfasından oluşturulan ya da düzenlenen özel değişkenler ve sarmalayıcılar artık Steam'i yeniden başlatmaya gerek kalmadan hemen görüntüleniyor.",
         "Arayüz ayarlamaları ve genel güvenilirlik iyileştirmeleri."
       ]
+    },
+    "v0_16_4": {
+      "title": "0.16.4 sürümündeki yenilikler",
+      "items": [
+        "Eklenti bildirimleri artık Decky Proton Launch simgesini gösteriyor",
+        "Bir oyuna komut eklemek, wrapper zaten varsa onu çoğaltmıyor; mevcut kopyalar açılışta otomatik olarak temizleniyor"
+      ]
     }
   }
 }

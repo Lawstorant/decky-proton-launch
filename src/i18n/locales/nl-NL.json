@@ -293,6 +293,13 @@
         "Aangepaste variabelen en wrappers die zijn aangemaakt of bewerkt vanuit Algemene commando's of de pagina van een game worden nu direct weergegeven, zonder dat Steam opnieuw moet worden opgestart.",
         "Interface-aanpassingen en algemene betrouwbaarheidsverbeteringen."
       ]
+    },
+    "v0_16_4": {
+      "title": "Nieuw in versie 0.16.4",
+      "items": [
+        "Meldingen van de plugin tonen nu het Decky Proton Launch-pictogram",
+        "Een commando aan een game toevoegen dupliceert de wrapper niet meer als die er al is, en bestaande duplicaten worden bij het opstarten automatisch opgeruimd"
+      ]
     }
   }
 }

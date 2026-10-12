@@ -293,6 +293,13 @@
         "Benutzerdefinierte Variablen und Wrapper, die über Globale Befehle oder die Seite eines Spiels erstellt oder bearbeitet werden, werden jetzt sofort angezeigt, ohne dass Steam neu gestartet werden muss.",
         "UI-Anpassungen und allgemeine Zuverlässigkeitsverbesserungen."
       ]
+    },
+    "v0_16_4": {
+      "title": "Neuigkeiten in Version 0.16.4",
+      "items": [
+        "Benachrichtigungen des Plugins zeigen jetzt das Decky-Proton-Launch-Symbol",
+        "Das Hinzufügen eines Befehls zu einem Spiel dupliziert den Wrapper nicht mehr, wenn er bereits vorhanden ist; vorhandene Duplikate werden beim Start automatisch bereinigt"
+      ]
     }
   }
 }

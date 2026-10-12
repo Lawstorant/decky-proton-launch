@@ -1,8 +1,9 @@
 import React from "react";
 import { ConfirmModal, showModal } from "@decky/ui";
-import { call, toaster } from "@decky/api";
+import { call } from "@decky/api";
 import { useTranslation } from "react-i18next";
 import { SteamGame } from "../data/types";
+import { pluginToast } from "./toast";
 
 declare const SteamClient: any;
 
@@ -57,8 +58,43 @@ export function openRestartModal(game: SteamGame): void {
 // toggle buttons below and for the silent auto-wire/unwire that
 // GameDetailView's save effect does when a profile is created/emptied.
 
+// A duplicated wrapper reads "W W %command%" — LAUNCH_OPTION itself only
+// matches once in that, so occurrences have to be counted on the path.
+const WRAPPER_RE = /~\/\.config\/decky-proton-launch\/proton-launch\s*/g;
+
+function stripWrapper(options: string, keepFirst = false): string {
+  let seen = 0;
+  const stripped = options.replace(WRAPPER_RE, (m) =>
+    keepFirst && seen++ === 0 ? m : "",
+  );
+  const cleaned = stripped.replace(/\s+/g, " ").trim();
+  return cleaned === "%command%" ? "" : cleaned;
+}
+
+// Startup sweep: games that already ended up with the wrapper twice (see
+// addWrapperViaSteamClient's idempotency check) get collapsed back to one.
+// The backend only lists candidates — the write goes through SteamClient
+// for the same reason as everything else in this section.
+export async function cleanDuplicateWrappers(): Promise<void> {
+  try {
+    const appIds = await call<[], number[]>("get_duplicated_wrapper_apps");
+    for (const appId of appIds) {
+      const current = await getAppLaunchOptions(appId);
+      if ((current.match(WRAPPER_RE) ?? []).length > 1) {
+        await SteamClient.Apps.SetAppLaunchOptions(
+          appId,
+          stripWrapper(current, true),
+        );
+      }
+    }
+  } catch {
+    // Best-effort — retried on the next launch.
+  }
+}
+
 export async function addWrapperViaSteamClient(appId: number): Promise<void> {
   const current = await getAppLaunchOptions(appId);
+  if (current.includes(LAUNCH_OPTION)) return;
   let newOptions: string;
   if (current.includes("%command%")) {
     newOptions = current.replace("%command%", LAUNCH_OPTION);
@@ -70,9 +106,13 @@ export async function addWrapperViaSteamClient(appId: number): Promise<void> {
   await SteamClient.Apps.SetAppLaunchOptions(appId, newOptions);
 }
 
-export async function removeWrapperViaSteamClient(appId: number): Promise<void> {
+export async function removeWrapperViaSteamClient(
+  appId: number,
+): Promise<void> {
   const current = await getAppLaunchOptions(appId);
-  const newOptions = current.replace(LAUNCH_OPTION, "").trim();
+  // Every occurrence, so a game that already ended up with a duplicated
+  // wrapper gets fully cleaned by a single removal.
+  const newOptions = stripWrapper(current);
   await SteamClient.Apps.SetAppLaunchOptions(appId, newOptions);
 }
 
@@ -87,7 +127,7 @@ export async function doRemoveWrapper(
     if (!game.is_shortcut) {
       await removeWrapperViaSteamClient(game.appid);
       onSuccess(false);
-      toaster.toast({ title: t("wrapper_removed"), body: game.name });
+      pluginToast({ title: t("wrapper_removed"), body: game.name });
     } else {
       const ok = await call<[number, boolean], boolean>(
         "remove_launch_option_only",
@@ -96,14 +136,14 @@ export async function doRemoveWrapper(
       );
       if (ok) {
         onSuccess(false);
-        toaster.toast({ title: t("wrapper_removed"), body: game.name });
+        pluginToast({ title: t("wrapper_removed"), body: game.name });
         openRestartModal(game);
       } else {
-        toaster.toast({ title: t("wrapper_error"), body: game.name });
+        pluginToast({ title: t("wrapper_error"), body: game.name });
       }
     }
   } catch {
-    toaster.toast({ title: t("wrapper_error"), body: game.name });
+    pluginToast({ title: t("wrapper_error"), body: game.name });
   }
 }
 
@@ -120,7 +160,7 @@ export async function toggleWrapper(
     if (!game.is_shortcut) {
       await addWrapperViaSteamClient(game.appid);
       onSuccess(true);
-      toaster.toast({ title: t("wrapper_added"), body: game.name });
+      pluginToast({ title: t("wrapper_added"), body: game.name });
     } else {
       const result = await call<
         [number, boolean],
@@ -128,13 +168,13 @@ export async function toggleWrapper(
       >("add_launch_option", game.appid, true);
       if (result.success) {
         onSuccess(true);
-        toaster.toast({ title: t("wrapper_added"), body: game.name });
+        pluginToast({ title: t("wrapper_added"), body: game.name });
         openRestartModal(game);
       } else {
-        toaster.toast({ title: t("wrapper_error"), body: game.name });
+        pluginToast({ title: t("wrapper_error"), body: game.name });
       }
     }
   } catch {
-    toaster.toast({ title: t("wrapper_error"), body: game.name });
+    pluginToast({ title: t("wrapper_error"), body: game.name });
   }
 }

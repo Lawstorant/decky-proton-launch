@@ -293,6 +293,13 @@
         "Niestandardowe zmienne i wrappery utworzone lub edytowane w Poleceniach globalnych albo na stronie gry pojawiają się teraz od razu, bez konieczności ponownego uruchamiania Steam.",
         "Poprawki interfejsu i ogólna poprawa niezawodności."
       ]
+    },
+    "v0_16_4": {
+      "title": "Nowości w wersji 0.16.4",
+      "items": [
+        "Powiadomienia wtyczki wyświetlają teraz ikonę Decky Proton Launch",
+        "Dodanie polecenia do gry nie duplikuje już wrappera, jeśli już istnieje, a istniejące duplikaty są automatycznie czyszczone przy uruchomieniu"
+      ]
     }
   }
 }

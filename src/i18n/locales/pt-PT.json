@@ -291,6 +291,13 @@
         "As variáveis e wrappers personalizados criados ou editados em Comandos globais ou na página de um jogo passam agora a aparecer de imediato, sem ser necessário reiniciar a Steam.",
         "Ajustes de interface e melhorias gerais de fiabilidade."
       ]
+    },
+    "v0_16_4": {
+      "title": "Novidades da versão 0.16.4",
+      "items": [
+        "As notificações do plugin passam a mostrar o ícone do Decky Proton Launch",
+        "Adicionar um comando a um jogo já não duplica o wrapper quando este já existe, e os duplicados existentes são limpos automaticamente no arranque"
+      ]
     }
   }
 }

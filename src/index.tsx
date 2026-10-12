@@ -4,10 +4,10 @@ import {
   definePlugin,
   addEventListener,
   removeEventListener,
-  toaster,
   call,
 } from "@decky/api";
 import { FaRocket } from "react-icons/fa";
+import { pluginToast } from "./utils/toast";
 import i18n from "i18next";
 import {
   BackHandler,
@@ -25,6 +25,7 @@ import { loadTranslations } from "./i18n";
 import { staticClasses } from "@decky/ui";
 import { copy } from "./utils/functions";
 import { migrateLegacyWrapper } from "./utils/migrateLegacyWrapper";
+import { cleanDuplicateWrappers } from "./utils/wrapperAction";
 import { AppProvider } from "./context/AppProvider";
 import ListCommandsView from "./views/ListCommandsView";
 import { SettingsView } from "./views/SettingsView";
@@ -39,11 +40,7 @@ import { GAME_GROUP_HEADER_STYLES } from "./components/GameGroupHeader";
 import { SteamGame, ScriptStatus } from "./data/types";
 
 type View =
-  | "home"
-  | "settings"
-  | "games-picker"
-  | "game-detail"
-  | "global-commands";
+  "home" | "settings" | "games-picker" | "game-detail" | "global-commands";
 
 const resolveHomeView = (
   defaultHome: DefaultHome,
@@ -72,7 +69,8 @@ const App: React.FC = () => {
   // game-detail can't be restored this way (selectedGame would be lost
   // along with it) — fall back to games-picker for that one case.
   const isRestoringView = useRef(
-    Date.now() - lastViewAt < NAV_RESTORE_WINDOW_MS && lastView !== "game-detail",
+    Date.now() - lastViewAt < NAV_RESTORE_WINDOW_MS &&
+      lastView !== "game-detail",
   ).current;
   const [view, setView] = useState<View>(
     isRestoringView ? lastView : "games-picker",
@@ -94,8 +92,7 @@ const App: React.FC = () => {
     return () => clearInterval(heartbeat);
   }, [view]);
 
-  const goHome = () =>
-    setView(resolveHomeView(defaultHome, hideVariablesPage));
+  const goHome = () => setView(resolveHomeView(defaultHome, hideVariablesPage));
 
   // defaultHome loads asynchronously — apply it once, unless we're
   // restoring a view (see above), which this would otherwise stomp.
@@ -113,6 +110,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     migrateLegacyWrapper();
+    cleanDuplicateWrappers();
   }, []);
 
   // Detect running game, polling every 5s
@@ -186,8 +184,7 @@ const App: React.FC = () => {
     );
 
   const mainView = view as "home" | "games-picker";
-  const isOnHome =
-    mainView === resolveHomeView(defaultHome, hideVariablesPage);
+  const isOnHome = mainView === resolveHomeView(defaultHome, hideVariablesPage);
 
   return (
     <BackHandler onBack={isOnHome ? undefined : goHome}>
@@ -229,7 +226,17 @@ const App: React.FC = () => {
         />
       )}
       {noData && (
-        <div style={{ margin: "4px 16px 0", padding: "6px 10px", background: "#3a0000", border: "1px solid #c00", borderRadius: "6px", fontSize: 11, color: "#ff6b6b" }}>
+        <div
+          style={{
+            margin: "4px 16px 0",
+            padding: "6px 10px",
+            background: "#3a0000",
+            border: "1px solid #c00",
+            borderRadius: "6px",
+            fontSize: 11,
+            color: "#ff6b6b",
+          }}
+        >
           {t("no_data")}
         </div>
       )}
@@ -263,7 +270,7 @@ export default definePlugin(() => {
   loadTranslations();
 
   const listener = addEventListener("timer_event", (...args) => {
-    toaster.toast({ title: "Event received", body: JSON.stringify(args) });
+    pluginToast({ title: "Event received", body: JSON.stringify(args) });
   });
 
   // Fired by Plugin._main() on the Python side (see plugin_updater.py) as
@@ -272,7 +279,7 @@ export default definePlugin(() => {
   const updateListener = addEventListener(
     "plugin_update_available",
     (info: PluginUpdateInfo) => {
-      toaster.toast({
+      pluginToast({
         title: i18n.t("plugin_update:section_label"),
         body: i18n.t("plugin_update:banner", { version: info?.latest_version }),
       });

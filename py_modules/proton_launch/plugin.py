@@ -20,7 +20,7 @@ from .launch_option import (
     LAUNCH_OPTION,
     set_launch_option, remove_launch_option, get_status,
     set_launch_option_shortcut, remove_launch_option_shortcut,
-    migrate_legacy_shortcut_options, legacy_apps_with_wrapper,
+    migrate_legacy_shortcut_options, legacy_apps_with_wrapper, duplicated_wrapper_apps,
     legacy_wrapper_still_referenced,
 )
 from decky_plugin_toolkit import PluginUpdaterMixin, WhatsNewSeenMixin, OtherPluginsSeenMixin
@@ -1071,6 +1071,11 @@ class Plugin(PluginUpdaterMixin, WhatsNewSeenMixin, OtherPluginsSeenMixin):
         if not legacy_script_path().is_file():
             return []
         return legacy_apps_with_wrapper()
+
+    async def get_duplicated_wrapper_apps(self) -> List[int]:
+        """Steam app_ids with the wrapper present twice in their launch
+        options — the frontend collapses them live via SteamClient."""
+        return duplicated_wrapper_apps()
 
     async def finalize_wrapper_migration(self) -> bool:
         """Called by the frontend once it has rewritten every Steam game's

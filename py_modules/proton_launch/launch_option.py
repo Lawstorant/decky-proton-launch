@@ -253,6 +253,33 @@ def legacy_apps_with_wrapper() -> list:
     return result
 
 
+def duplicated_wrapper_apps() -> list:
+    """Steam (non-shortcut) app_ids whose on-disk LaunchOptions carry the
+    wrapper path more than once. Read-only for the same reason as
+    legacy_apps_with_wrapper(): the frontend collapses them live via
+    SteamClient, since a direct write would get clobbered by Steam."""
+    result = []
+    for user_dir in get_user_dirs():
+        lc = user_dir / "config" / "localconfig.vdf"
+        if not lc.is_file():
+            continue
+        try:
+            data = parse_text(lc.read_text(encoding="utf-8", errors="replace"))
+            apps = (
+                data.get("UserLocalConfigStore", {})
+                    .get("Software", {})
+                    .get("Valve", {})
+                    .get("Steam", {})
+                    .get("apps", {})
+            )
+            for app_str, app_data in apps.items():
+                if app_str.isdigit() and app_data.get("LaunchOptions", "").count(WRAPPER_PATH) > 1:
+                    result.append(int(app_str))
+        except Exception as e:
+            decky.logger.warning(f"[dedupe] localconfig scan error {lc}: {e}")
+    return result
+
+
 def _shortcuts_reference_legacy_wrapper() -> bool:
     for sc_path in get_shortcuts_paths():
         try:
