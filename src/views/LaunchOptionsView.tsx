@@ -6,11 +6,12 @@ import {
   TextField,
   DialogButton,
 } from "@decky/ui";
-import { call, toaster } from "@decky/api";
+import { call } from "@decky/api";
 import { ActionButton } from "@moi952/decky-ui-kit";
 import { FiArrowLeft, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { useLaunchStack } from "../context/LaunchStackContext";
 import { useTranslation } from "react-i18next";
+import { pluginToast } from "../utils/toast";
 
 interface SteamGame {
   appid: number;
@@ -67,13 +68,13 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack }) => {
         game.is_shortcut,
       );
       if (ok) {
-        toaster.toast({ title: game.name, body: t("toast_updated") });
+        pluginToast({ title: game.name, body: t("toast_updated") });
         reload();
       } else {
-        toaster.toast({ title: "Error", body: t("error_update") });
+        pluginToast({ title: "Error", body: t("error_update") });
       }
     } catch {
-      toaster.toast({ title: "Error", body: t("error_backend") });
+      pluginToast({ title: "Error", body: t("error_backend") });
     } finally {
       setSaving(false);
     }
@@ -88,13 +89,13 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack }) => {
         game.is_shortcut,
       );
       if (ok) {
-        toaster.toast({ title: game.name, body: t("toast_removed") });
+        pluginToast({ title: game.name, body: t("toast_removed") });
         reload();
       } else {
-        toaster.toast({ title: "Error", body: t("error_remove") });
+        pluginToast({ title: "Error", body: t("error_remove") });
       }
     } catch {
-      toaster.toast({ title: "Error", body: t("error_backend") });
+      pluginToast({ title: "Error", body: t("error_backend") });
     } finally {
       setSaving(false);
     }
@@ -109,13 +110,13 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack }) => {
         game.is_shortcut,
       );
       if (ok) {
-        toaster.toast({ title: game.name, body: t("toast_cleared") });
+        pluginToast({ title: game.name, body: t("toast_cleared") });
         reload();
       } else {
-        toaster.toast({ title: "Error", body: t("error_clear") });
+        pluginToast({ title: "Error", body: t("error_clear") });
       }
     } catch {
-      toaster.toast({ title: "Error", body: t("error_backend") });
+      pluginToast({ title: "Error", body: t("error_backend") });
     } finally {
       setSaving(false);
     }
@@ -263,7 +264,7 @@ export const LaunchOptionsView: React.FC<LaunchOptionsViewProps> = ({
   useEffect(() => {
     call<[], SteamGame[]>("get_games")
       .then((result) => setGames(result))
-      .catch(() => toaster.toast({ title: "Error", body: t("error_load") }))
+      .catch(() => pluginToast({ title: "Error", body: t("error_load") }))
       .finally(() => setLoading(false));
   }, [t]);
 

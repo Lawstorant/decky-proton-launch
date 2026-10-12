@@ -7,7 +7,8 @@ import {
   ToggleField,
 } from "@decky/ui";
 import type { GamepadEvent } from "@decky/ui";
-import { call, toaster } from "@decky/api";
+import { call } from "@decky/api";
+import { pluginToast } from "../utils/toast";
 import { useTranslation } from "react-i18next";
 import { FiArrowLeft } from "react-icons/fi";
 import { ActionButton } from "@moi952/decky-ui-kit";
@@ -103,7 +104,7 @@ export const GlobalCommandsView: React.FC<GlobalCommandsViewProps> = ({
         );
         setProfile(draft);
       } catch {
-        toaster.toast({ title: "Error", body: t("error_save") });
+        pluginToast({ title: "Error", body: t("error_save") });
       } finally {
         setSaving(false);
       }

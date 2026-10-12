@@ -5,7 +5,8 @@ import {
   PanelSectionRow,
   ToggleField,
 } from "@decky/ui";
-import { call, toaster } from "@decky/api";
+import { call } from "@decky/api";
+import { pluginToast } from "../utils/toast";
 import { useSettings, DefaultHome } from "../context/SettingsContext";
 import { ActionButton, AnchoredDropdown } from "@moi952/decky-ui-kit";
 import {
@@ -150,7 +151,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onBack }) => {
             <ActionButton
               onClick={() => {
                 clearCoverCache();
-                toaster.toast({ title: tSettings("images_title"), body: tSettings("purge_image_cache_done") });
+                pluginToast({ title: tSettings("images_title"), body: tSettings("purge_image_cache_done") });
               }}
               width="100%"
             >

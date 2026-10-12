@@ -7,7 +7,8 @@ import {
   ToggleField,
 } from "@decky/ui";
 import type { GamepadEvent } from "@decky/ui";
-import { call, toaster } from "@decky/api";
+import { call } from "@decky/api";
+import { pluginToast } from "../utils/toast";
 import { ActionButton } from "@moi952/decky-ui-kit";
 import { InlineConfirm } from "../components/InlineConfirm";
 import { GameCover } from "../components/GameCover";
@@ -187,7 +188,7 @@ export const GameDetailView: React.FC<GameDetailViewProps> = ({
         setProfile(currentDraft);
         setDisabledGlobals(currentDisabled);
       } catch {
-        toaster.toast({ title: "Error", body: t("error_save") });
+        pluginToast({ title: "Error", body: t("error_save") });
       } finally {
         setSaving(false);
       }
@@ -314,9 +315,9 @@ export const GameDetailView: React.FC<GameDetailViewProps> = ({
       setDraft({});
       setDisabledGlobals([]);
       setDisabledGlobalsDraft([]);
-      toaster.toast({ title: game.name, body: t("profile_deleted") });
+      pluginToast({ title: game.name, body: t("profile_deleted") });
     } catch {
-      toaster.toast({ title: "Error", body: t("error_save") });
+      pluginToast({ title: "Error", body: t("error_save") });
     } finally {
       setSaving(false);
     }

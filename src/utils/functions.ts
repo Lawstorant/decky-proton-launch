@@ -1,4 +1,4 @@
-import { toaster } from "@decky/api";
+import { pluginToast } from "./toast";
 
 export const copy = async (text: string) => {
   try {
@@ -16,7 +16,7 @@ export const copy = async (text: string) => {
     document.body.removeChild(tempInput);
 
     if (success) {
-      toaster.toast({
+      pluginToast({
         title: "Copied",
         body: text,
       });
@@ -24,7 +24,7 @@ export const copy = async (text: string) => {
       throw new Error("execCommand failed");
     }
   } catch (err) {
-    toaster.toast({
+    pluginToast({
       title: "Copy Failed",
       body: "Unable to copy to clipboard",
     });
