@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Focusable,
+  Navigation,
   PanelSection,
   PanelSectionRow,
   ToggleField,
@@ -17,12 +18,17 @@ import {
 } from "@moi952/decky-plugin-toolkit";
 import { useTranslation } from "react-i18next";
 import { FiArrowLeft, FiRefreshCw, FiImage } from "react-icons/fi";
+import { FaDiscord } from "react-icons/fa";
 import { useRemoteData } from "../context/RemoteDataContext";
 import { openGenericDeleteModal } from "../utils/modals";
 import { useCustomWrappers } from "../context/CustomWrappersContext";
 import { useCustomVariables } from "../context/CustomVariablesContext";
 import { fetchPluginReleases } from "../utils/githubReleases";
-import { FEATURE_REQUEST_URL, BUG_REPORT_URL } from "../utils/links";
+import {
+  FEATURE_REQUEST_URL,
+  BUG_REPORT_URL,
+  DISCORD_URL,
+} from "../utils/links";
 import { clearCoverCache } from "../utils/coverCache";
 import { CoverImageType } from "../context/SettingsContext";
 
@@ -135,8 +141,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onBack }) => {
         <PanelSectionRow>
           <AnchoredDropdown
             options={[
-              { value: "portrait", label: tSettings("cover_image_type_portrait") },
-              { value: "landscape", label: tSettings("cover_image_type_landscape") },
+              {
+                value: "portrait",
+                label: tSettings("cover_image_type_portrait"),
+              },
+              {
+                value: "landscape",
+                label: tSettings("cover_image_type_landscape"),
+              },
               { value: "banner", label: tSettings("cover_image_type_banner") },
             ]}
             selectedValue={coverImageType}
@@ -151,7 +163,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onBack }) => {
             <ActionButton
               onClick={() => {
                 clearCoverCache();
-                pluginToast({ title: tSettings("images_title"), body: tSettings("purge_image_cache_done") });
+                pluginToast({
+                  title: tSettings("images_title"),
+                  body: tSettings("purge_image_cache_done"),
+                });
               }}
               width="100%"
             >
@@ -167,6 +182,18 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onBack }) => {
         featureRequestUrl={FEATURE_REQUEST_URL}
         bugReportUrl={BUG_REPORT_URL}
       />
+
+      <PanelSection title="Discord">
+        <PanelSectionRow>
+          <ActionButton
+            onClick={() => Navigation.NavigateToExternalWeb(DISCORD_URL)}
+            width="100%"
+          >
+            <FaDiscord size={14} style={{ marginRight: 6 }} />
+            Discord
+          </ActionButton>
+        </PanelSectionRow>
+      </PanelSection>
 
       <SupportSection />
 
